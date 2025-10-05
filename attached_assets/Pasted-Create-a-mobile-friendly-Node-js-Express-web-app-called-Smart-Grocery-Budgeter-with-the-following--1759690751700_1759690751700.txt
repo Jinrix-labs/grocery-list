@@ -1,0 +1,29 @@
+Create a mobile-friendly Node.js Express web app called "Smart Grocery Budgeter" with the following features:
+
+1. **Backend**:
+   - Use Express.js with Replit database (@replit/database) to store user grocery lists and budgets.
+   - Add a JSON file (groceries.json) with 20 sample grocery items (e.g., chicken: $5/lb, rice: $2/lb, eggs: $4/dozen) for fallback data.
+   - Create a POST /budget route: Accept user input (budget: number, dietaryPrefs: string like 'keto' or 'vegan', householdSize: number). Fetch price estimates from Edamam API (free tier, use placeholder app_id and app_key for now). Calculate total cost, return a grocery list (items, quantities, prices), and a boolean (underBudget). If over budget, suggest one cheaper swap (e.g., 'Swap beef for beans to save $5'). Fallback to groceries.json if API fails.
+   - Create a POST /save-list route: Save the generated list to Replit database under userId (hardcode 'user123' for now).
+   - Create a GET /user/:userId route: Retrieve saved lists for the user.
+   - Add error handling and a daily API call limit (150 calls) tracked in the database.
+
+2. **Frontend**:
+   - Use Bootstrap 5 for a mobile-responsive UI with a clean, modern design (colors: teal #008080, white #fff, light gray #f8f9fa).
+   - Create index.html with:
+     - A form: Input fields for budget (number, $), dietary preferences (dropdown: keto, vegan, none), household size (number, 1-10).
+     - A button to generate the grocery list, displaying items, prices, total cost, and under/over budget status in a card.
+     - A section to show saved lists from the database.
+     - A button to trigger AI savings tips (e.g., 'Cut snacks to save $10') using a simple rule-based logic (e.g., if snacks > 20% of budget, suggest cutting).
+   - Add basic CSS for responsiveness and a header with the app name.
+
+3. **AI Features**:
+   - Implement a simple rule-based AI in the /budget route to suggest one budget-saving tip (e.g., 'Buy bulk rice to save $3') based on item prices or dietary prefs.
+   - Add a placeholder for future integration with a free Hugging Face model for advanced tips (no implementation needed, just comment).
+
+4. **Extras**:
+   - Include a favicon (use my existing bbq-icon.svg from another Repl if possible, or generate a simple SVG of a shopping cart).
+   - Ensure the app fits Replit’s free tier storage (500MB) and uses minimal API calls to avoid limits.
+   - Add console logs for debugging and user-friendly error messages (e.g., 'API limit reached, using fallback data').
+
+Generate the following files: server.js, public/index.html, public/style.css, groceries.json. Make the code modular, commented, and ready to deploy with a repl.co link. Avoid external dependencies beyond axios, @replit/database, and Bootstrap CDN.
