@@ -1,0 +1,124 @@
+{
+  "groceries": [
+    {
+      "name": "Chicken Breast",
+      "price": 5.99,
+      "unit": "lb",
+      "category": "protein"
+    },
+    {
+      "name": "Ground Beef",
+      "price": 6.49,
+      "unit": "lb",
+      "category": "protein"
+    },
+    {
+      "name": "Salmon Fillet",
+      "price": 12.99,
+      "unit": "lb",
+      "category": "protein"
+    },
+    {
+      "name": "Eggs",
+      "price": 4.29,
+      "unit": "dozen",
+      "category": "protein"
+    },
+    {
+      "name": "White Rice",
+      "price": 2.49,
+      "unit": "lb",
+      "category": "grains"
+    },
+    {
+      "name": "Brown Rice",
+      "price": 3.29,
+      "unit": "lb",
+      "category": "grains"
+    },
+    {
+      "name": "Whole Wheat Bread",
+      "price": 3.99,
+      "unit": "loaf",
+      "category": "grains"
+    },
+    {
+      "name": "Pasta",
+      "price": 1.99,
+      "unit": "lb",
+      "category": "grains"
+    },
+    {
+      "name": "Black Beans",
+      "price": 1.49,
+      "unit": "can",
+      "category": "protein"
+    },
+    {
+      "name": "Chickpeas",
+      "price": 1.69,
+      "unit": "can",
+      "category": "protein"
+    },
+    {
+      "name": "Broccoli",
+      "price": 2.99,
+      "unit": "lb",
+      "category": "vegetables"
+    },
+    {
+      "name": "Spinach",
+      "price": 3.49,
+      "unit": "bunch",
+      "category": "vegetables"
+    },
+    {
+      "name": "Carrots",
+      "price": 1.99,
+      "unit": "lb",
+      "category": "vegetables"
+    },
+    {
+      "name": "Tomatoes",
+      "price": 2.79,
+      "unit": "lb",
+      "category": "vegetables"
+    },
+    {
+      "name": "Bananas",
+      "price": 0.69,
+      "unit": "lb",
+      "category": "fruits"
+    },
+    {
+      "name": "Apples",
+      "price": 1.99,
+      "unit": "lb",
+      "category": "fruits"
+    },
+    {
+      "name": "Milk",
+      "price": 4.49,
+      "unit": "gallon",
+      "category": "dairy"
+    },
+    {
+      "name": "Cheddar Cheese",
+      "price": 5.99,
+      "unit": "lb",
+      "category": "dairy"
+    },
+    {
+      "name": "Greek Yogurt",
+      "price": 5.49,
+      "unit": "32oz",
+      "category": "dairy"
+    },
+    {
+      "name": "Olive Oil",
+      "price": 8.99,
+      "unit": "bottle",
+      "category": "pantry"
+    }
+  ]
+}
