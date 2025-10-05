@@ -1,82 +1,103 @@
 import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { BudgetForm } from "@/components/BudgetForm";
 import { GroceryListDisplay } from "@/components/GroceryListDisplay";
 import { SavedLists } from "@/components/SavedLists";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import type { GroceryList, GroceryItem } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { GroceryList, GroceryItem, BudgetRequest, BudgetResponse } from "@shared/schema";
+
+const USER_ID = "user123";
 
 export default function Home() {
   const [currentList, setCurrentList] = useState<{
     items: GroceryItem[];
     totalCost: number;
     budget: number;
+    dietaryPrefs: string;
+    householdSize: number;
     underBudget: boolean;
     swapSuggestion?: string;
     savingsTip?: string;
   } | null>(null);
-  const [savedLists, setSavedLists] = useState<GroceryList[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  
   const { toast } = useToast();
 
-  const handleGenerateList = async (data: { budget: number; dietaryPrefs: string; householdSize: number }) => {
-    setIsLoading(true);
-    console.log("Generating grocery list with:", data);
+  const { data: savedLists = [] } = useQuery<GroceryList[]>({
+    queryKey: ["/api/user", USER_ID],
+  });
 
-    setTimeout(() => {
-      const mockItems: GroceryItem[] = [
-        { name: "Chicken Breast", quantity: "2 lb", price: 11.98, category: "protein" },
-        { name: "White Rice", quantity: "3 lb", price: 7.47, category: "grains" },
-        { name: "Broccoli", quantity: "2 lb", price: 5.98, category: "vegetables" },
-        { name: "Eggs", quantity: "1 dozen", price: 4.29, category: "protein" },
-        { name: "Bananas", quantity: "3 lb", price: 2.07, category: "fruits" },
-        { name: "Milk", quantity: "1 gallon", price: 4.49, category: "dairy" },
-      ];
-
-      const totalCost = mockItems.reduce((sum, item) => sum + item.price, 0);
-      const underBudget = totalCost <= data.budget;
-
+  const generateListMutation = useMutation({
+    mutationFn: async (data: BudgetRequest) => {
+      const res = await apiRequest("POST", "/api/budget", data);
+      return await res.json() as BudgetResponse;
+    },
+    onSuccess: (response, variables) => {
       setCurrentList({
-        items: mockItems,
-        totalCost,
-        budget: data.budget,
-        underBudget,
-        swapSuggestion: !underBudget ? "Swap ground beef for black beans to save $4.50" : undefined,
-        savingsTip: "Buy rice in bulk to save $3 per pound",
+        items: response.items,
+        totalCost: response.totalCost,
+        budget: variables.budget,
+        dietaryPrefs: variables.dietaryPrefs,
+        householdSize: variables.householdSize,
+        underBudget: response.underBudget,
+        swapSuggestion: response.swapSuggestion,
+        savingsTip: response.savingsTip,
       });
 
-      setIsLoading(false);
-      
       toast({
         title: "Grocery list generated!",
-        description: `${mockItems.length} items selected for $${totalCost.toFixed(2)}`,
+        description: `${response.items.length} items selected for $${response.totalCost.toFixed(2)}`,
       });
-    }, 1500);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error generating list",
+        description: error.message || "Failed to generate grocery list. Using fallback data.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const saveListMutation = useMutation({
+    mutationFn: async (listData: any) => {
+      const res = await apiRequest("POST", "/api/save-list", listData);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user", USER_ID] });
+      toast({
+        title: "List saved!",
+        description: "Your grocery list has been saved successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error saving list",
+        description: "Failed to save your grocery list.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleGenerateList = (data: BudgetRequest) => {
+    generateListMutation.mutate(data);
   };
 
   const handleSaveList = () => {
     if (!currentList) return;
 
-    const newList: GroceryList = {
-      id: `list-${Date.now()}`,
-      userId: "user123",
+    saveListMutation.mutate({
+      userId: USER_ID,
       budget: currentList.budget,
-      dietaryPrefs: "none",
-      householdSize: 2,
-      items: currentList.items as any,
+      dietaryPrefs: currentList.dietaryPrefs,
+      householdSize: currentList.householdSize,
+      items: currentList.items,
       totalCost: currentList.totalCost,
-      underBudget: currentList.underBudget ? 1 : 0,
-      swapSuggestion: currentList.swapSuggestion || null,
-      savingsTip: currentList.savingsTip || null,
-      createdAt: new Date(),
-    };
-
-    setSavedLists([newList, ...savedLists]);
-    
-    toast({
-      title: "List saved!",
-      description: "Your grocery list has been saved successfully.",
+      underBudget: currentList.underBudget,
+      swapSuggestion: currentList.swapSuggestion,
+      savingsTip: currentList.savingsTip,
     });
   };
 
@@ -92,7 +113,10 @@ export default function Home() {
             </p>
           </div>
 
-          <BudgetForm onSubmit={handleGenerateList} isLoading={isLoading} />
+          <BudgetForm 
+            onSubmit={handleGenerateList} 
+            isLoading={generateListMutation.isPending} 
+          />
 
           {currentList && (
             <div className="space-y-4">
@@ -108,14 +132,18 @@ export default function Home() {
                 onClick={handleSaveList}
                 variant="outline"
                 className="w-full"
+                disabled={saveListMutation.isPending}
                 data-testid="button-save-list"
               >
-                Save This List
+                {saveListMutation.isPending ? "Saving..." : "Save This List"}
               </Button>
             </div>
           )}
 
-          <SavedLists lists={savedLists} onListClick={(list) => console.log("List clicked:", list)} />
+          <SavedLists 
+            lists={savedLists} 
+            onListClick={(list) => console.log("List clicked:", list)} 
+          />
         </div>
       </main>
     </div>
