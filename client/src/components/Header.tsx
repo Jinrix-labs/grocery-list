@@ -8,7 +8,7 @@ export function Header() {
           <div className="flex items-center justify-center w-9 h-9 rounded-md bg-primary-foreground/10">
             <ShoppingCart className="w-5 h-5" />
           </div>
-          <h1 className="text-xl font-semibold">Smart Grocery Budgeter</h1>
+          <h1 className="text-xl font-semibold">Simple Shopping List</h1>
         </div>
       </div>
     </header>
