@@ -1,7 +1,15 @@
 {
     "rewrites": [
         {
-            "source": "/((?!.*\\.[^.]*$).*)",
+            "source": "/assets/:path*",
+            "destination": "/assets/:path*"
+        },
+        {
+            "source": "/(manifest.json|sw.js|favicon.ico|cart-icon.svg|icon-.*\\.svg)",
+            "destination": "/$1"
+        },
+        {
+            "source": "/(.*)",
             "destination": "/index.html"
         }
     ]
