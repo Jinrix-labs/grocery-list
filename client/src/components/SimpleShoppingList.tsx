@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,41 @@ export function SimpleShoppingList() {
         "lettuce", "carrots", "broccoli", "cereal", "yogurt", "juice", "coffee",
         "tea", "sugar", "flour", "oil", "salt", "pepper", "garlic", "lemon"
     ];
+
+    // Load data from localStorage on mount
+    useEffect(() => {
+        try {
+            const savedItems = localStorage.getItem('shoppingListItems');
+            const savedBudget = localStorage.getItem('shoppingListBudget');
+            
+            if (savedItems) {
+                setItems(JSON.parse(savedItems));
+            }
+            if (savedBudget) {
+                setBudget(savedBudget);
+            }
+        } catch (error) {
+            console.error('Error loading from localStorage:', error);
+        }
+    }, []);
+
+    // Save items to localStorage whenever they change
+    useEffect(() => {
+        try {
+            localStorage.setItem('shoppingListItems', JSON.stringify(items));
+        } catch (error) {
+            console.error('Error saving items to localStorage:', error);
+        }
+    }, [items]);
+
+    // Save budget to localStorage whenever it changes
+    useEffect(() => {
+        try {
+            localStorage.setItem('shoppingListBudget', budget);
+        } catch (error) {
+            console.error('Error saving budget to localStorage:', error);
+        }
+    }, [budget]);
 
     const addItem = () => {
         if (newItem.trim()) {
